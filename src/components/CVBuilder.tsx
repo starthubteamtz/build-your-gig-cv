@@ -12,6 +12,7 @@ import SkillsForm from './cv-forms/SkillsForm';
 import ProjectsForm from './cv-forms/ProjectsForm';
 import ReferencesForm from './cv-forms/ReferencesForm';
 import CVPreview from './CVPreview';
+import CVTemplateSelector, { CVTemplate } from './CVTemplateSelector';
 
 export interface CVData {
   personalInfo: {
@@ -81,11 +82,13 @@ const initialCVData: CVData = {
 };
 
 const CVBuilder = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1); // Start with template selection
   const [cvData, setCVData] = useState<CVData>(initialCVData);
   const [showPreview, setShowPreview] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<CVTemplate>('classic');
 
   const steps = [
+    { title: 'Template', component: null },
     { title: 'Personal Info', component: PersonalInfoForm },
     { title: 'Education', component: EducationForm },
     { title: 'Experience', component: ExperienceForm },
@@ -94,7 +97,7 @@ const CVBuilder = () => {
     { title: 'References', component: ReferencesForm },
   ];
 
-  const progress = ((currentStep + 1) / steps.length) * 100;
+  const progress = ((currentStep + 2) / steps.length) * 100;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -103,7 +106,7 @@ const CVBuilder = () => {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 0) {
+    if (currentStep > -1) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -125,27 +128,34 @@ const CVBuilder = () => {
 
     try {
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 0,
       });
       
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      // Add first page
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
 
+      // Add additional pages if needed
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
       }
 
       const fileName = cvData.personalInfo.fullName 
@@ -159,7 +169,7 @@ const CVBuilder = () => {
     }
   };
 
-  const CurrentFormComponent = steps[currentStep].component;
+  const CurrentFormComponent = currentStep >= 0 ? steps[currentStep].component : null;
 
   if (showPreview) {
     return (
@@ -180,7 +190,7 @@ const CVBuilder = () => {
             </Button>
           </div>
           <div id="cv-preview">
-            <CVPreview cvData={cvData} />
+            <CVPreview cvData={cvData} template={selectedTemplate} />
           </div>
         </div>
       </div>
@@ -192,7 +202,7 @@ const CVBuilder = () => {
       <div className="container mx-auto py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Build Your Professional CV</h1>
+          <h1 className="text-4xl font-bold mb-2 text-foreground">Build Your Professional CV</h1>
           <p className="text-muted-foreground text-lg">
             Create a stunning CV step by step for T-Hustle Africa opportunities
           </p>
@@ -201,9 +211,9 @@ const CVBuilder = () => {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium">Progress</span>
+            <span className="text-sm font-medium text-foreground">Progress</span>
             <span className="text-sm text-muted-foreground">
-              Step {currentStep + 1} of {steps.length}
+              Step {currentStep + 2} of {steps.length}
             </span>
           </div>
           <Progress value={progress} className="h-3" />
@@ -217,7 +227,8 @@ const CVBuilder = () => {
               variant={index === currentStep ? "default" : index < currentStep ? "secondary" : "outline"}
               size="sm"
               onClick={() => handleStepClick(index)}
-              className="text-xs"
+              className="text-xs font-medium"
+              disabled={currentStep === -1 && index > 0}
             >
               {index + 1}. {step.title}
             </Button>
@@ -230,23 +241,32 @@ const CVBuilder = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  {steps[currentStep].title}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowPreview(true)}
-                    className="flex items-center gap-2"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Preview
-                  </Button>
+                  {steps[currentStep + 1]?.title}
+                  {currentStep >= 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowPreview(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Eye className="w-4 h-4" />
+                      Preview
+                    </Button>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CurrentFormComponent
-                  data={cvData}
-                  updateData={updateCVData}
-                />
+                {currentStep === -1 ? (
+                  <CVTemplateSelector
+                    selectedTemplate={selectedTemplate}
+                    onSelectTemplate={setSelectedTemplate}
+                  />
+                ) : CurrentFormComponent ? (
+                  <CurrentFormComponent
+                    data={cvData}
+                    updateData={updateCVData}
+                  />
+                ) : null}
               </CardContent>
             </Card>
 
@@ -255,7 +275,7 @@ const CVBuilder = () => {
               <Button
                 variant="outline"
                 onClick={handlePrevious}
-                disabled={currentStep === 0}
+                disabled={currentStep === -1}
                 className="flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />

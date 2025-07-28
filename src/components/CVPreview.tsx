@@ -1,5 +1,6 @@
 import React from 'react';
 import { CVData } from './CVBuilder';
+import { CVTemplate } from './CVTemplateSelector';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -7,9 +8,41 @@ import { Mail, Phone, MapPin, Globe, Linkedin } from 'lucide-react';
 
 interface CVPreviewProps {
   cvData: CVData;
+  template?: CVTemplate;
 }
 
-const CVPreview: React.FC<CVPreviewProps> = ({ cvData }) => {
+const CVPreview: React.FC<CVPreviewProps> = ({ cvData, template = 'classic' }) => {
+  const getTemplateStyles = () => {
+    switch (template) {
+      case 'modern':
+        return 'bg-white text-gray-900 font-sans border-l-4 border-t-orange-400';
+      case 'minimal':
+        return 'bg-white text-gray-800 font-light';
+      case 'professional':
+        return 'bg-white text-gray-900 font-serif';
+      case 'creative':
+        return 'bg-white text-gray-900 font-sans border-t-8 border-t-orange-400';
+      case 'executive':
+        return 'bg-white text-gray-900 font-serif border-b-4 border-gray-800';
+      default: // classic
+        return 'bg-white text-gray-900 font-sans';
+    }
+  };
+
+  const getSectionStyles = () => {
+    switch (template) {
+      case 'modern':
+        return 'border-l-2 border-t-orange-200 pl-4';
+      case 'minimal':
+        return 'border-b border-gray-100 pb-2';
+      case 'creative':
+        return 'bg-gradient-to-r from-orange-50 to-transparent p-3 rounded-l-lg';
+      case 'executive':
+        return 'border-t-2 border-gray-200 pt-3';
+      default:
+        return '';
+    }
+  };
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString + '-01'); // Add day for proper parsing
@@ -17,12 +50,11 @@ const CVPreview: React.FC<CVPreviewProps> = ({ cvData }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card className="shadow-lg">
-        <CardContent className="p-8 space-y-6">
+    <div className={`max-w-4xl mx-auto shadow-lg print:shadow-none ${getTemplateStyles()}`} style={{ minHeight: '297mm', pageBreakInside: 'avoid' }}>
+      <div className="p-8 space-y-6" style={{ pageBreakInside: 'avoid' }}>
           {/* Header */}
-          <div className="text-center space-y-4 border-b pb-6">
-            <h1 className="text-3xl font-bold text-primary">
+          <div className={`text-center space-y-4 border-b pb-6 ${getSectionStyles()}`} style={{ pageBreakAfter: 'avoid' }}>
+            <h1 className={`text-3xl font-bold ${template === 'modern' ? 'text-t-orange-dark' : 'text-primary'}`}>
               {cvData.personalInfo.fullName || 'Your Name'}
             </h1>
             
@@ -233,8 +265,7 @@ const CVPreview: React.FC<CVPreviewProps> = ({ cvData }) => {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 };
