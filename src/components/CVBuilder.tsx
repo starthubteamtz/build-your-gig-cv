@@ -82,22 +82,22 @@ const initialCVData: CVData = {
 };
 
 const CVBuilder = () => {
-  const [currentStep, setCurrentStep] = useState(-1); // Start with template selection
+  const [currentStep, setCurrentStep] = useState(0); // Start with personal info
   const [cvData, setCVData] = useState<CVData>(initialCVData);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<CVTemplate>('classic');
 
   const steps = [
-    { title: 'Template', component: null },
     { title: 'Personal Info', component: PersonalInfoForm },
     { title: 'Education', component: EducationForm },
     { title: 'Experience', component: ExperienceForm },
     { title: 'Skills', component: SkillsForm },
     { title: 'Projects', component: ProjectsForm },
     { title: 'References', component: ReferencesForm },
+    { title: 'Template', component: null },
   ];
 
-  const progress = ((currentStep + 2) / steps.length) * 100;
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -106,7 +106,7 @@ const CVBuilder = () => {
   };
 
   const handlePrevious = () => {
-    if (currentStep > -1) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -169,7 +169,7 @@ const CVBuilder = () => {
     }
   };
 
-  const CurrentFormComponent = currentStep >= 0 ? steps[currentStep].component : null;
+  const CurrentFormComponent = steps[currentStep]?.component;
 
   if (showPreview) {
     return (
@@ -213,7 +213,7 @@ const CVBuilder = () => {
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm font-medium text-foreground">Progress</span>
             <span className="text-sm text-muted-foreground">
-              Step {currentStep + 2} of {steps.length}
+              Step {currentStep + 1} of {steps.length}
             </span>
           </div>
           <Progress value={progress} className="h-3" />
@@ -228,7 +228,6 @@ const CVBuilder = () => {
               size="sm"
               onClick={() => handleStepClick(index)}
               className="text-xs font-medium"
-              disabled={currentStep === -1 && index > 0}
             >
               {index + 1}. {step.title}
             </Button>
@@ -241,8 +240,8 @@ const CVBuilder = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  {steps[currentStep + 1]?.title}
-                  {currentStep >= 0 && (
+                  {steps[currentStep]?.title}
+                  {currentStep < steps.length - 1 && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -256,7 +255,7 @@ const CVBuilder = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {currentStep === -1 ? (
+                {currentStep === steps.length - 1 ? (
                   <CVTemplateSelector
                     selectedTemplate={selectedTemplate}
                     onSelectTemplate={setSelectedTemplate}
@@ -275,7 +274,7 @@ const CVBuilder = () => {
               <Button
                 variant="outline"
                 onClick={handlePrevious}
-                disabled={currentStep === -1}
+                disabled={currentStep === 0}
                 className="flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />

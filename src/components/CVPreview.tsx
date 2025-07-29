@@ -50,8 +50,8 @@ const CVPreview: React.FC<CVPreviewProps> = ({ cvData, template = 'classic' }) =
   };
 
   return (
-    <div className={`max-w-4xl mx-auto shadow-lg print:shadow-none ${getTemplateStyles()}`} style={{ minHeight: '297mm', pageBreakInside: 'avoid' }}>
-      <div className="p-8 space-y-6" style={{ pageBreakInside: 'avoid' }}>
+    <div className={`w-[210mm] mx-auto shadow-lg print:shadow-none ${getTemplateStyles()}`} style={{ minHeight: '297mm', maxWidth: '210mm', pageBreakInside: 'avoid' }}>
+      <div className="p-6 space-y-4 text-sm" style={{ pageBreakInside: 'avoid' }}>
           {/* Header */}
           <div className={`text-center space-y-4 border-b pb-6 ${getSectionStyles()}`} style={{ pageBreakAfter: 'avoid' }}>
             <h1 className={`text-3xl font-bold ${template === 'modern' ? 'text-t-orange-dark' : 'text-primary'}`}>
