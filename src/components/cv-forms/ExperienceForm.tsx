@@ -63,11 +63,11 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor={`company-${index}`}>Company/Organization *</Label>
-                <Input id={`company-${index}`} value={exp.company} onChange={e => updateExperience(index, 'company', e.target.value)} placeholder="T-Hustle Africa" />
+                <Input id={`company-${index}`} value={exp.company} onChange={e => updateExperience(index, 'company', e.target.value)} placeholder="T-Hustle Africa" className="bg-zinc-400" />
               </div>
               <div>
                 <Label htmlFor={`position-${index}`}>Position/Title *</Label>
-                <Input id={`position-${index}`} value={exp.position} onChange={e => updateExperience(index, 'position', e.target.value)} placeholder="Marketing Intern" />
+                <Input id={`position-${index}`} value={exp.position} onChange={e => updateExperience(index, 'position', e.target.value)} placeholder="Marketing Intern" className="bg-zinc-400" />
               </div>
             </div>
 
@@ -78,7 +78,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
               </div>
               <div>
                 <Label htmlFor={`endDate-${index}`}>End Date</Label>
-                <Input id={`endDate-${index}`} type="month" value={exp.endDate} onChange={e => updateExperience(index, 'endDate', e.target.value)} disabled={exp.current} />
+                <Input id={`endDate-${index}`} type="month" value={exp.endDate} onChange={e => updateExperience(index, 'endDate', e.target.value)} disabled={exp.current} className="bg-zinc-400" />
               </div>
             </div>
 
