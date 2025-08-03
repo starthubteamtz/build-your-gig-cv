@@ -169,7 +169,7 @@ const CVBuilder = () => {
     return <div className="min-h-screen bg-background">
         <div className="container mx-auto py-8">
           <div className="flex items-center justify-between mb-6">
-            <Button variant="outline" onClick={() => setShowPreview(false)} className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setShowPreview(false)} className="flex items-center gap-2 bg-slate-200 hover:bg-slate-100 text-slate-800">
               <ChevronLeft className="w-4 h-4" />
               Back to Builder
             </Button>
