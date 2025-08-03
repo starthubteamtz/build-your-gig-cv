@@ -236,10 +236,7 @@ const CVBuilder = () => {
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </Button>
-              <Button onClick={handleNext} disabled={currentStep === steps.length - 1} className="flex items-center gap-2">
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+              
             </div>
           </div>
 
