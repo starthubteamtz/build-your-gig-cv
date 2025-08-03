@@ -94,7 +94,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({
 
             <div>
               <Label htmlFor={`description-${index}`}>Job Description & Achievements</Label>
-              <Textarea id={`description-${index}`} value={exp.description} onChange={e => updateExperience(index, 'description', e.target.value)} placeholder="• Managed social media accounts with 10k+ followers&#10;• Increased engagement by 50% through creative campaigns&#10;• Collaborated with team of 5 to organize events" rows={4} />
+              <Textarea id={`description-${index}`} value={exp.description} onChange={e => updateExperience(index, 'description', e.target.value)} placeholder="• Managed social media accounts with 10k+ followers&#10;• Increased engagement by 50% through creative campaigns&#10;• Collaborated with team of 5 to organize events" rows={4} className="bg-zinc-700" />
               <p className="text-sm text-muted-foreground mt-1">
                 Use bullet points to highlight your key responsibilities and achievements.
               </p>
